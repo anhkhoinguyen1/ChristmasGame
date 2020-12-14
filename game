@@ -1,0 +1,321 @@
+import pygame
+import random
+import sys
+import time
+from pygame import mixer
+#   general setup
+pygame.init()
+
+game_over = True
+
+chosen_speed = 0
+
+WIDTH = 600
+HEIGHT = 700
+res = (WIDTH,HEIGHT)
+screen = pygame.display.set_mode(res)
+mixer.music.load('mistlebro.wav')
+mixer.music.set_volume(0.4)
+mixer.music.play(-1)
+
+click = mixer.Sound('click.wav')
+click.set_volume(1)
+RED = (255,0,0)
+BLUE = (0,0,255)
+YELLOW = (255,255,0)
+WHITE = (255,255,255)
+BACKGROUND_COLOR = (0,0,0)
+#background music setup
+button = pygame.image.load("button.png")
+button_light = pygame.image.load("button_light.png")
+intro  = pygame.image.load("intro.png")
+#   main menu setup
+menu = True
+main = pygame.image.load("menu.png")
+color = (255,255,255)
+color_light = (170,170,170)
+color_dark = (100,100,100)
+width = screen.get_width()
+height = screen.get_height()
+smallfont = pygame.font.SysFont('Corbel',27)
+text = smallfont.render('PLAY' , True , color)
+level = False
+while menu == True:
+
+    for ev in pygame.event.get():
+        if ev.type == pygame.QUIT:
+            pygame.quit()
+        #checks if a mouse is clicked
+        if ev.type == pygame.MOUSEBUTTONDOWN:
+            if width/2-70 <= mouse[0] <= width/2+70 and height/2-20 <= mouse[1] <= height/2+20:
+                click.play()
+                menu = False
+                level = True
+
+    screen.blit(main,(0,0))
+
+    screen.blit(intro,(50,50))
+
+    mouse = pygame.mouse.get_pos()
+
+    if width/2-70 <= mouse[0] <= width/2+70 and height/2-20 <= mouse[1] <= height/2+20:
+        screen.blit(button_light,(width/2-70,height/2-20,140,40))
+    else:
+        screen.blit(button,(width/2-70,height/2-20,140,40))
+
+    screen.blit(text,(width/2-31,height/2-12))
+
+    pygame.display.update()
+
+level_one = smallfont.render('Easy' , True , color)
+level_two = smallfont.render('Medium' , True , color)
+level_three = smallfont.render('Hard' , True , color)
+border = 23
+#   difficulty select
+checkpoint = True
+while checkpoint == True:
+    while level == True:
+        for ev in pygame.event.get():
+
+            if ev.type == pygame.QUIT:
+                pygame.quit()
+            #checks if a mouse is clicked
+
+            if ev.type == pygame.MOUSEBUTTONDOWN:
+                mixer.music.load('lofi_background.wav')
+                mixer.music.set_volume(0.5)
+                if (300-70 <= mouse[0] <= width/2+70 and 200 <= mouse[1] <= 200+40):
+                    chosen_speed = [7,9,11,13]
+                    level = False
+                    game_over = False
+                    click.play()
+                    mixer.music.play(-1)
+                elif (300-70 <= mouse[0] <= width/2+70 and 300 <= mouse[1] <= 300+40):
+                    chosen_speed = [11,13,15,17]
+                    level = False
+                    game_over = False
+                    click.play()
+                    mixer.music.play(-1)
+                elif (300-70 <= mouse[0] <= width/2+70 and 400 <= mouse[1] <= 400+40):
+                    chosen_speed = [15,17,19,21]
+                    level = False
+                    game_over = False
+                    click.play()
+                    mixer.music.play(-1)
+
+        screen.blit(main,(0,0))
+
+        mouse = pygame.mouse.get_pos()
+
+        if 300-70 <= mouse[0] <= width/2+70 and 200 <= mouse[1] <= 200+40:
+            screen.blit(button_light,(300-70,200))
+        else:
+            screen.blit(button,(300-70,200))
+
+        screen.blit(level_one,(width/2-26,205))
+
+        if 300-70 <= mouse[0] <= width/2+70 and 300 <= mouse[1] <= 300+40:
+            screen.blit(button_light,(300-70,300))
+        else:
+            screen.blit(button,(300-70,300))
+
+        screen.blit(level_two,(width/2-46,307))
+
+        if 300-70 <= mouse[0] <= width/2+70 and 400 <= mouse[1] <= 400+40:
+            screen.blit(button_light,(300-70,400))
+        else:
+            screen.blit(button,(300-70,400))
+
+        screen.blit(level_three,(width/2-26,407))
+
+        pygame.display.update()
+
+    #variables setup
+    player_size = 50
+
+    player_pos = [(random.randint(border,(WIDTH-player_size-border))), 100]
+
+    object_size = [50,100]
+    object_pos = [random.randint(19,WIDTH-object_size[0]-19), HEIGHT - object_size[1] - 19]
+
+    player_skin = [pygame.image.load("giftblue.png"), pygame.image.load("giftcyan.png"), pygame.image.load("giftgreen.png"),
+    pygame.image.load("giftorange.png"),pygame.image.load("giftpurple.png"),pygame.image.load("giftred.png"),pygame.image.load("giftyellow.png")]
+
+    random_skin = player_skin[random.randint(0,6)]
+    player = random_skin
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    background = pygame.image.load("background.png")
+    top_background = pygame.image.load("top_background.png")
+    object = pygame.image.load("chimney.png")
+    #object = ["chimney.png"]
+
+    SPEED = 0
+    score = 0
+
+    clock = pygame.time.Clock()
+
+    #text
+    myFont = pygame.font.SysFont("calibri", 35)
+    highlight = 110
+    lost = myFont.render("YOU LOSE", 2, RED)
+
+    #retry and quit function
+    retry_text = smallfont.render('Retry' , True , color)
+    quit_text = smallfont.render('Quit' , True , color)
+    def retry(retry_text):
+        while True:
+
+            for ev in pygame.event.get():
+
+                if ev.type == pygame.QUIT:
+                    pygame.quit()
+                if ev.type == pygame.MOUSEBUTTONDOWN:
+                    if (300-70 <= mouse[0] <= width/2+70 and 200 <= mouse[1] <= 200+40):
+                        level = True
+                        game_over = True
+                        click.play()
+                        return game_over
+
+                    elif (300-70 <= mouse[0] <= width/2+70 and 300 <= mouse[1] <= 300+40):
+                        click.play()
+                        pygame.quit()
+
+            mouse = pygame.mouse.get_pos()
+
+            if (300-70 <= mouse[0] <= width/2+70 and 200 <= mouse[1] <= 200+40):
+                screen.blit(button_light,(width/2-70,200))
+            else:
+                screen.blit(button,(width/2-70,200))
+
+            screen.blit(retry_text ,(width/2-31,207))
+
+            if (300-70 <= mouse[0] <= width/2+70 and 300 <= mouse[1] <= 300+40):
+                screen.blit(button_light,(width/2-70,300))
+            else:
+                screen.blit(button,(width/2-70,300))
+
+            screen.blit(quit_text ,(width/2-26,307))
+
+            pygame.display.update()
+
+    #function list
+    def draw_player(player_pos, player_size):
+        player_pos = [random.randint(border,(WIDTH-player_size-border)), 100]
+        pygame.draw.rect(screen, RED, (player_pos[0], player_pos[1], player_size, player_size))
+
+    def reset_player(player_pos,player_size):
+        player_pos = [random.randint(border,(WIDTH-player_size-border)), 100]
+        return player_pos
+
+    def difficulty(score,SPEED,chosen_speed):
+        if score >= 0:
+            SPEED = chosen_speed[0]
+        if score >= 5:
+            SPEED = chosen_speed[1]
+        if score >= 10:
+            SPEED = chosen_speed[2]
+        if score > 15:
+            SPEED = chosen_speed[3]
+        return SPEED
+
+    def reset_object(object_pos,object_size):
+        object_pos = [random.randint(border,(WIDTH-object_size[0]-border)), HEIGHT - object_size[1] - 19]
+        return object_pos
+
+    def update_player_position(player_pos,SPEED,chosen_speed):
+        SPEED = difficulty(score,SPEED,chosen_speed)
+        player_pos[1] += SPEED
+
+    def detect_collision(player_pos, object_pos):
+    	p_x = player_pos[0]
+    	p_y = player_pos[1]
+
+    	e_x = object_pos[0]
+    	e_y = object_pos[1]
+
+    	if (e_x >= p_x and e_x < (p_x + player_size)) or (p_x >= e_x and p_x < (e_x + object_size[0])):
+    		if (e_y >= p_y and e_y < (p_y + player_size)) or (p_y >= e_y and p_y < (e_y + object_size[1])):
+    			return True
+    	return False
+
+    #game loop
+    while not game_over:
+        #set BACKGROUND_COLOR
+
+        screen.blit(background,(0,0))
+        #controls
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                key_pressed = pygame.key.get_pressed()
+                if key_pressed[pygame.K_LEFT]:
+                    if player_pos[0] < (player_size + border):
+                        player_pos[0] = border
+                    else:
+                        player_pos[0] -= 50
+                elif key_pressed[pygame.K_RIGHT]:
+                    if (player_pos[0] + player_size) > (WIDTH - player_size - border):
+                        player_pos[0] = WIDTH - player_size - border
+                    else:
+                        player_pos[0] += 50
+
+        #pygame.draw.rect(screen, BLUE, (object_pos[0], object_pos[1], object_size[0], object_size[1]))
+        # set objects
+        screen.blit(object,(object_pos[0],object_pos[1]))
+        screen.blit(player,(player_pos[0],player_pos[1]))
+
+        text = "Score:" + str(score)
+        label = myFont.render(text, 1, (0,0,0))
+
+
+
+        pygame.draw.rect(screen, WHITE, (WIDTH - 133, 25, highlight, 30))
+        corner = (WIDTH-130,25)
+        middle = (WIDTH/2-55, 115)
+        screen.blit(label, corner)
+
+
+        if score > 9:
+            highlight = 126
+
+        update_player_position(player_pos,SPEED,chosen_speed)
+
+        if player_pos[1] > (HEIGHT - (player_size/2)):
+            #screen.blit(lost, (WIDTH/2, HEIGHT/2))
+            mixer.music.stop()
+            #pygame.draw.rect(screen, WHITE, (WIDTH - 133, 25, highlight, 30))
+            time.sleep(0.5)
+            screen.blit(top_background,(0,0))
+            pygame.draw.rect(screen, WHITE, (WIDTH/2-58, 116, highlight, 30))
+            screen.blit(label, middle)
+            end = mixer.Sound('end.wav')
+            end.set_volume(0.4)
+            end.play()
+            time.sleep(3)
+            #game_over = True
+            #level = True
+            #break
+            game_over = level = retry(retry_text)
+
+        if detect_collision(player_pos, object_pos):
+            player_pos = reset_player(player_pos,player_size)
+            object_pos = reset_object(object_pos,object_size)
+
+            random_skin = player_skin[random.randint(0,6)]
+            player = random_skin
+
+            hit = mixer.Sound('hit.wav')
+            hit.set_volume(0.3)
+            hit.play()
+            score += 1
+
+        clock.tick(30)
+
+        pygame.display.update()
+
+        # HURRY! Santa is in trouble! Help him deliver the presents before the kids wake up!
+        # Move the present into the chimney
+        # LEFT_ARROW for left && RIGHT_ARROW for RIGHT_ARROW
+        # Hurry and save christmas!
+        # CTRL + SHIFT + B to start
